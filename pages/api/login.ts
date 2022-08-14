@@ -5,7 +5,7 @@ import bcrpyt from 'bcrypt';
 
 const prisma=new PrismaClient();
 
-export default async function LoginHandler(req:NextApiRequest, res:NextApiResponse) {
+async function LoginHandler(req:NextApiRequest, res:NextApiResponse){
   if(req.method!=="GET"){
     res.end("Only get requests!!")
   };
@@ -43,3 +43,5 @@ export default async function LoginHandler(req:NextApiRequest, res:NextApiRespon
 
   return;
 }
+
+export default LoginHandler;
