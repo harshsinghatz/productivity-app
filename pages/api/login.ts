@@ -6,15 +6,15 @@ import bcrpyt from 'bcrypt';
 const prisma=new PrismaClient();
 
 async function LoginHandler(req:NextApiRequest, res:NextApiResponse){
-  if(req.method!=="GET"){
-    res.end("Only get requests!!")
+  if(req.method!=="POST"){
+    res.status(401).json({success:false,message:"Only post requests!!"})
   };
 
   const { email, password }:{email:string,password:string} = req.body;
   console.log(email,password);
 
   if(!email || !password){
-    res.end("Email/Password missing!");
+    res.status(301).json({success:false,message:"Email/Password missing!"});
     return;
   }
 
@@ -25,22 +25,20 @@ async function LoginHandler(req:NextApiRequest, res:NextApiResponse){
   });
 
   if(!user){
-    res.end("Email not found, please sign up!");
-    return;
+    res.status(301).json({success:false,message:"Email not found, please sign up!"});
   }
-  const result=bcrpyt.compareSync(password,user.password)
+  const result=bcrpyt.compareSync(password,user!.password)
 
   if(result){
     res.setHeader(
       "session-token",
       generateJWTToken({email:email})
     );
-    res.end("Login sucessfull!!");
+    res.status(200).json({success:true,message:"User logged in successfully!"});
     return;
   }
 
-  res.end("Wrong password!");
-
+  res.status(300).json({success:false,message:"Wrong Password!"});
   return;
 }
 

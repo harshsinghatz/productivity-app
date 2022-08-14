@@ -12,6 +12,10 @@ const LoginContainer = styled.div`
     align-items: center;
     gap: 1rem;
   }
+
+  .error{
+    color:red;
+  }
 `;
 
 export default LoginContainer;

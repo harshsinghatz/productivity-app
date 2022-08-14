@@ -1,15 +1,18 @@
 import { TextField, Button } from "@mui/material";
 import { NextPage } from "next";
 import LoginContainer from "./styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Router from 'next/router';
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loggedIn,setLoggedIn]=useState(false);
+  const [error,setError]=useState("");
 
-  const loginHandler = (e) => {
-    e.preventDefault();
+  const loginHandler = (event:Event) => {
+    event.preventDefault();
     fetch("/api/login", {
-      method: "GET",
+      method: "POST",
       body: JSON.stringify({
         email,
         password,
@@ -18,11 +21,25 @@ const Login: NextPage = () => {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => console.log(res))
+      .then((res) => res.json())
+      .then((res)=>{
+        if(res.success){
+          setError("");
+          setLoggedIn(true);
+        }else{
+          setError(res.message);
+        }
+      })
       .catch((err) => {
         console.log(err.message);
       });
   };
+
+  useEffect(()=>{
+    if(loggedIn){
+      Router.push("/");
+    }
+  },[loggedIn])
 
   return (
     <LoginContainer>
@@ -41,8 +58,9 @@ const Login: NextPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button variant="contained">Login</Button>
+        <Button type="submit" variant="contained">Login</Button>
       </form>
+      {error && <div className="error">{error}</div>}
     </LoginContainer>
   );
 };
